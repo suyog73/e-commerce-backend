@@ -65,9 +65,9 @@ exports.searchProduct = async (req, res) => {
     try {
         let result = await product_schema.find({
             "$or": [
-                { name: { $regex: key } },
-                { company: { $regex: key } },
-                { category: { $regex: key } },
+                { name: { $regex: new RegExp(key, "i") } },
+                { company: { $regex: new RegExp(key, "i") } },
+                { category: { $regex: new RegExp(key, "i") } },
             ]
         })
 

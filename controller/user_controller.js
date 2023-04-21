@@ -1,4 +1,9 @@
 const user_schema = require("../model/user_model")
+const Jwt = require("jsonwebtoken");
+
+require('dotenv').config();
+
+const jwtKey = process.env.JWTSecret;
 
 exports.register = async (req, res) => {
     try {
@@ -7,7 +12,9 @@ exports.register = async (req, res) => {
 
         user = user.toObject();
         delete (user.password);
-        res.send(user);
+        Jwt.sign({ user }, jwtKey, (err, token) => {
+            res.send({ user, token });
+        })
     } catch (error) {
         res.status(500).send({
             message: "Something went wrong...",
@@ -24,8 +31,11 @@ exports.login = async (req, res) => {
         if (email && password) {
             let user = await user_schema.findOne({ email, password }).select("-password");
 
-            if (user)
-                res.send(user);
+            if (user) {
+                Jwt.sign({ user }, jwtKey, (err, token) => {
+                    res.send({ user, token });
+                })
+            }
             else
                 res.send({ error: "No user found" });
         } else {
